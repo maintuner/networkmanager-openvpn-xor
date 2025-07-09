@@ -140,7 +140,7 @@ index 51049de..33b39af 100644
 +				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, "yes");
 +				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE, params[1]);
 +				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY, params[2]);
-+				FILE *log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++				log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
 +				if (log_file) {
 +					fprintf(log_file, "[%s] IMPORT: Added scramble settings to connection\n", g_get_current_time_str());
 +					fclose(log_file);
