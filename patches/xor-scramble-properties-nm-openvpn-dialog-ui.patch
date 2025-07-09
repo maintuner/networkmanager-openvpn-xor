@@ -1,0 +1,94 @@
+diff --git a/properties/nm-openvpn-dialog.ui b/properties/nm-openvpn-dialog.ui
+index 874fba5..5fc2fb2 100644
+--- a/properties/nm-openvpn-dialog.ui
++++ b/properties/nm-openvpn-dialog.ui
+@@ -648,7 +648,7 @@ config: ifconfig &lt;l&gt; &lt;rn&gt;</property>
+                         <property name="visible">True</property>
+                         <property name="can_focus">False</property>
+                         <property name="tooltip_text" translatable="yes">Direction for Static Key encryption mode (non-TLS).
+-If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses “1”, this connection must use “0”. If you are unsure what value to use, contact your system administrator.
++If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses "1", this connection must use "0". If you are unsure what value to use, contact your system administrator.
+ config: static &lt;file&gt; [direction]</property>
+                         <property name="model">model1</property>
+                         <child>
+@@ -1183,7 +1183,7 @@ config: dev-type tun | tap</property>
+                       <object class="GtkEntry" id="dev_entry">
+                         <property name="visible">True</property>
+                         <property name="can_focus">True</property>
+-                        <property name="tooltip_text" translatable="yes">Use custom name for TUN/TAP virtual device (instead of default “tun” or “tap”).
++                        <property name="tooltip_text" translatable="yes">Use custom name for TUN/TAP virtual device (instead of default "tun" or "tap").
+ config: dev &lt;name&gt;</property>
+                         <property name="width_chars">15</property>
+                       </object>
+@@ -1550,6 +1550,62 @@ config: max-routes &lt;n&gt;</property>
+                     <property name="position">15</property>
+                   </packing>
+                 </child>
++                <child>
++                  <object class="GtkBox" id="hbox_scramble">
++                    <property name="visible">True</property>
++                    <property name="can_focus">False</property>
++                    <property name="spacing">6</property>
++                    <child>
++                      <object class="GtkCheckButton" id="scramble_checkbutton">
++                        <property name="label" translatable="yes">Enable _scramble (XOR obfuscation)</property>
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="receives_default">False</property>
++                        <property name="tooltip_text" translatable="yes">Enable XOR scramble/obfuscation for OpenVPN connection.</property>
++                        <property name="use_underline">True</property>
++                        <property name="draw_indicator">True</property>
++                      </object>
++                      <packing>
++                        <property name="expand">False</property>
++                        <property name="fill">True</property>
++                        <property name="position">0</property>
++                      </packing>
++                    </child>
++                    <child>
++                      <object class="GtkComboBoxText" id="scramble_type_combo">
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="tooltip_text" translatable="yes">Type of scramble/obfuscation to use.</property>
++                        <items>
++                          <item translatable="yes">obfuscate</item>
++                        </items>
++                      </object>
++                      <packing>
++                        <property name="expand">False</property>
++                        <property name="fill">False</property>
++                        <property name="position">1</property>
++                      </packing>
++                    </child>
++                    <child>
++                      <object class="GtkEntry" id="scramble_key_entry">
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="tooltip_text" translatable="yes">Obfuscation key for XOR scramble.</property>
++                        <property name="width_chars">20</property>
++                      </object>
++                      <packing>
++                        <property name="expand">True</property>
++                        <property name="fill">True</property>
++                        <property name="position">2</property>
++                      </packing>
++                    </child>
++                  </object>
++                  <packing>
++                    <property name="expand">False</property>
++                    <property name="fill">True</property>
++                    <property name="position">16</property>
++                  </packing>
++                </child>
+               </object>
+             </child>
+             <child type="tab">
+@@ -2132,7 +2188,7 @@ config: tls-auth &lt;file&gt; [direction] | tls-crypt &lt;file&gt;</property>
+                             <property name="visible">True</property>
+                             <property name="can_focus">False</property>
+                             <property name="tooltip_text" translatable="yes">Direction parameter for static key mode.
+-If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses “1”, this connection must use “0”. If you are unsure what value to use, contact your system administrator.
++If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses "1", this connection must use "0". If you are unsure what value to use, contact your system administrator.
+ config: tls-auth &lt;file&gt; [direction]</property>
+                             <property name="model">model5</property>
+                             <child>

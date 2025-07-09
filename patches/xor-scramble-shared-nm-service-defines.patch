@@ -1,0 +1,15 @@
+diff --git a/shared/nm-service-defines.h b/shared/nm-service-defines.h
+index 44a83f6..9252011 100644
+--- a/shared/nm-service-defines.h
++++ b/shared/nm-service-defines.h
+@@ -94,6 +94,10 @@
+ #define NM_OPENVPN_KEY_CERTPASS_FLAGS            "cert-pass-flags"
+ #define NM_OPENVPN_KEY_HTTP_PROXY_PASSWORD_FLAGS "http-proxy-password-flags"
+ 
++#define NM_OPENVPN_KEY_SCRAMBLE_ENABLE           "scramble-enable"
++#define NM_OPENVPN_KEY_SCRAMBLE_TYPE             "scramble-type"
++#define NM_OPENVPN_KEY_SCRAMBLE_KEY              "scramble-key"
++
+ 
+ /* Internal auth-dialog -> service token indicating that no secrets are
+  * required for the connection.

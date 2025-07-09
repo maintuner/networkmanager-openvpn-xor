@@ -1,0 +1,3 @@
+[submodule "NetworkManager-openvpn"]
+	path = NetworkManager-openvpn
+	url = https://github.com/NetworkManager/NetworkManager-openvpn
