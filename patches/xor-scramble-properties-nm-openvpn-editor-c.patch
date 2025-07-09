@@ -19,6 +19,11 @@ index 4c3b7a0..fdcf5ef 100644
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
 +	gboolean scramble_enabled = _hash_get_boolean(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
 +	gtk_check_button_set_active(GTK_CHECK_BUTTON(widget), scramble_enabled);
++	FILE *log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++	if (log_file) {
++		fprintf(log_file, "[%s] UI_LOAD: scramble_enabled=%s\n", g_get_current_time_str(), scramble_enabled ? "true" : "false");
++		fclose(log_file);
++	}
 +
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
 +	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
@@ -26,6 +31,11 @@ index 4c3b7a0..fdcf5ef 100644
 +		gtk_combo_box_set_active_id(GTK_COMBO_BOX(widget), value);
 +	else
 +		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
++	log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++	if (log_file) {
++		fprintf(log_file, "[%s] UI_LOAD: scramble_type=%s\n", g_get_current_time_str(), value ? value : "NULL");
++		fclose(log_file);
++	}
 +
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
 +	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_KEY);
@@ -33,6 +43,11 @@ index 4c3b7a0..fdcf5ef 100644
 +		gtk_editable_set_text(GTK_EDITABLE(widget), value);
 +	else
 +		gtk_editable_set_text(GTK_EDITABLE(widget), "");
++	log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++	if (log_file) {
++		fprintf(log_file, "[%s] UI_LOAD: scramble_key=%s\n", g_get_current_time_str(), value ? value : "NULL");
++		fclose(log_file);
++	}
 +
  	return dialog;
  }
@@ -44,6 +59,11 @@ index 4c3b7a0..fdcf5ef 100644
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
 +	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(widget))) {
 +		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, g_strdup("yes"));
++		FILE *log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++		if (log_file) {
++			fprintf(log_file, "[%s] UI_SAVE: scramble_enabled=true\n", g_get_current_time_str());
++			fclose(log_file);
++		}
 +		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
 +		int scramble_type_idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 +		const char *scramble_type = "obfuscate"; // default
@@ -54,6 +74,11 @@ index 4c3b7a0..fdcf5ef 100644
 +		value = gtk_editable_get_text(GTK_EDITABLE(widget));
 +		if (value && *value)
 +			g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_KEY, g_strdup(value));
++		log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++		if (log_file) {
++			fprintf(log_file, "[%s] UI_SAVE: scramble_type=%s, scramble_key=%s\n", g_get_current_time_str(), scramble_type, value ? value : "NULL");
++			fclose(log_file);
++		}
 +	}
 +
  	return hash;

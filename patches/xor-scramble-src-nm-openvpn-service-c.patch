@@ -125,8 +125,20 @@ index af57227..5f79127 100644
 +	if (nm_streq0(tmp, "yes")) {
 +		const char *scramble_type = nm_setting_vpn_get_data_item(s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
 +		const char *scramble_key = nm_setting_vpn_get_data_item(s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY);
++		FILE *log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++		if (log_file) {
++			fprintf(log_file, "[%s] SERVICE: Processing scramble properties, type=%s, key=%s\n", 
++				g_get_current_time_str(), scramble_type ? scramble_type : "NULL", scramble_key ? scramble_key : "NULL");
++			fclose(log_file);
++		}
 +		if (nmovpn_arg_is_set(scramble_type) && nmovpn_arg_is_set(scramble_key)) {
 +			args_add_strv(args, "--scramble", scramble_type, scramble_key);
++			log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
++			if (log_file) {
++				fprintf(log_file, "[%s] SERVICE: Added --scramble %s %s to command line\n", 
++					g_get_current_time_str(), scramble_type, scramble_key);
++				fclose(log_file);
++			}
 +		}
 +	}
 +
