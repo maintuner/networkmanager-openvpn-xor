@@ -1,0 +1,20 @@
+diff --git a/properties/import-export.c b/properties/import-export.c
+index 51049de..33b39af 100644
+--- a/properties/import-export.c
++++ b/properties/import-export.c
+@@ -1629,6 +1629,16 @@ do_import (const char *path, const char *contents, gsize contents_len, GError **
+ 			continue;
+ 		}
+ 
++		// Add after other option handlers in the main import loop:
++		if (NM_IN_STRSET (params[0], "scramble")) {
++			if (params[1] && params[2]) {
++				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, "yes");
++				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE, params[1]);
++				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY, params[2]);
++			}
++			continue;
++		}
++
+ 		/* TODO: currently we ignore any unknown options and skip over them. */
+ 		continue; 
