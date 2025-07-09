@@ -1,0 +1,219 @@
+diff --git a/properties/import-export.c b/properties/import-export.c
+index 51049de..f2346cd 100644
+--- a/properties/import-export.c
++++ b/properties/import-export.c
+@@ -1422,6 +1422,21 @@ do_import (const char *path, const char *contents, gsize contents_len, GError **
+ 			continue;
+ 		}
+ 
++		if (NM_IN_STRSET (params[0], "scramble")) {
++			if (!args_params_check_nargs_minmax (params, 1, 2, &line_error))
++				goto handle_line_error;
++			if (!args_params_check_arg_utf8 (params, 1, NULL, &line_error))
++				goto handle_line_error;
++			setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, "yes");
++			setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE, params[1]);
++			if (params[2]) {
++				if (!args_params_check_arg_utf8 (params, 2, NULL, &line_error))
++					goto handle_line_error;
++				setting_vpn_add_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY, params[2]);
++			}
++			continue;
++		}
++
+ 		if (NM_IN_STRSET (params[0], NMV_OVPN_TAG_IFCONFIG)) {
+ 			if (!args_params_check_nargs_n (params, 2, &line_error))
+ 				goto handle_line_error;
+diff --git a/properties/nm-openvpn-dialog.ui b/properties/nm-openvpn-dialog.ui
+index 874fba5..5fc2fb2 100644
+--- a/properties/nm-openvpn-dialog.ui
++++ b/properties/nm-openvpn-dialog.ui
+@@ -648,7 +648,7 @@ config: ifconfig &lt;l&gt; &lt;rn&gt;</property>
+                         <property name="visible">True</property>
+                         <property name="can_focus">False</property>
+                         <property name="tooltip_text" translatable="yes">Direction for Static Key encryption mode (non-TLS).
+-If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses “1”, this connection must use “0”. If you are unsure what value to use, contact your system administrator.
++If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses "1", this connection must use "0". If you are unsure what value to use, contact your system administrator.
+ config: static &lt;file&gt; [direction]</property>
+                         <property name="model">model1</property>
+                         <child>
+@@ -1183,7 +1183,7 @@ config: dev-type tun | tap</property>
+                       <object class="GtkEntry" id="dev_entry">
+                         <property name="visible">True</property>
+                         <property name="can_focus">True</property>
+-                        <property name="tooltip_text" translatable="yes">Use custom name for TUN/TAP virtual device (instead of default “tun” or “tap”).
++                        <property name="tooltip_text" translatable="yes">Use custom name for TUN/TAP virtual device (instead of default "tun" or "tap").
+ config: dev &lt;name&gt;</property>
+                         <property name="width_chars">15</property>
+                       </object>
+@@ -1550,6 +1550,62 @@ config: max-routes &lt;n&gt;</property>
+                     <property name="position">15</property>
+                   </packing>
+                 </child>
++                <child>
++                  <object class="GtkBox" id="hbox_scramble">
++                    <property name="visible">True</property>
++                    <property name="can_focus">False</property>
++                    <property name="spacing">6</property>
++                    <child>
++                      <object class="GtkCheckButton" id="scramble_checkbutton">
++                        <property name="label" translatable="yes">Enable _scramble (XOR obfuscation)</property>
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="receives_default">False</property>
++                        <property name="tooltip_text" translatable="yes">Enable XOR scramble/obfuscation for OpenVPN connection.</property>
++                        <property name="use_underline">True</property>
++                        <property name="draw_indicator">True</property>
++                      </object>
++                      <packing>
++                        <property name="expand">False</property>
++                        <property name="fill">True</property>
++                        <property name="position">0</property>
++                      </packing>
++                    </child>
++                    <child>
++                      <object class="GtkComboBoxText" id="scramble_type_combo">
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="tooltip_text" translatable="yes">Type of scramble/obfuscation to use.</property>
++                        <items>
++                          <item translatable="yes">obfuscate</item>
++                        </items>
++                      </object>
++                      <packing>
++                        <property name="expand">False</property>
++                        <property name="fill">False</property>
++                        <property name="position">1</property>
++                      </packing>
++                    </child>
++                    <child>
++                      <object class="GtkEntry" id="scramble_key_entry">
++                        <property name="visible">True</property>
++                        <property name="can_focus">True</property>
++                        <property name="tooltip_text" translatable="yes">Obfuscation key for XOR scramble.</property>
++                        <property name="width_chars">20</property>
++                      </object>
++                      <packing>
++                        <property name="expand">True</property>
++                        <property name="fill">True</property>
++                        <property name="position">2</property>
++                      </packing>
++                    </child>
++                  </object>
++                  <packing>
++                    <property name="expand">False</property>
++                    <property name="fill">True</property>
++                    <property name="position">16</property>
++                  </packing>
++                </child>
+               </object>
+             </child>
+             <child type="tab">
+@@ -2132,7 +2188,7 @@ config: tls-auth &lt;file&gt; [direction] | tls-crypt &lt;file&gt;</property>
+                             <property name="visible">True</property>
+                             <property name="can_focus">False</property>
+                             <property name="tooltip_text" translatable="yes">Direction parameter for static key mode.
+-If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses “1”, this connection must use “0”. If you are unsure what value to use, contact your system administrator.
++If key direction is used, it must be the opposite of that used on the VPN peer. For example, if the peer uses "1", this connection must use "0". If you are unsure what value to use, contact your system administrator.
+ config: tls-auth &lt;file&gt; [direction]</property>
+                             <property name="model">model5</property>
+                             <child>
+diff --git a/properties/nm-openvpn-editor.c b/properties/nm-openvpn-editor.c
+index 4c3b7a0..53b11af 100644
+--- a/properties/nm-openvpn-editor.c
++++ b/properties/nm-openvpn-editor.c
+@@ -1564,6 +1564,7 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+ 	NMSettingSecretFlags pw_flags;
+ 	GError *error = NULL;
+ 	NMOvpnComp comp;
++	gboolean scramble_enabled;
+ 
+ 	g_return_val_if_fail (hash != NULL, NULL);
+ 
+@@ -1970,6 +1971,25 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+ 	                  "clicked", G_CALLBACK (gtk_widget_show),
+ 	                  gtk_builder_get_object (builder, "sk_key_chooser"));
+ 
++	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
++	scramble_enabled = _hash_get_boolean(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
++	gtk_check_button_set_active(GTK_CHECK_BUTTON(widget), scramble_enabled);
++
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
++	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
++	if (value && *value)
++		gtk_combo_box_set_active_id(GTK_COMBO_BOX(widget), value);
++	else
++		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
++
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
++	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_KEY);
++	if (value && *value)
++		gtk_editable_set_text(GTK_EDITABLE(widget), value);
++	else
++		gtk_editable_set_text(GTK_EDITABLE(widget), "");
++
+ 	return dialog;
+ }
+ 
+@@ -2417,6 +2437,22 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
+ 	if (gtk_check_button_get_active (GTK_CHECK_BUTTON (widget)))
+ 		g_hash_table_insert (hash, NM_OPENVPN_KEY_PUSH_PEER_INFO, g_strdup ("yes"));
+ 
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
++	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(widget))) {
++		int scramble_type_idx;
++		const char *scramble_type = "obfuscate"; // default
++		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, g_strdup("yes"));
++		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
++		scramble_type_idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
++		if (scramble_type_idx == 0) scramble_type = "obfuscate";
++		// Add more types here as needed
++		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE, g_strdup(scramble_type));
++		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
++		value = gtk_editable_get_text(GTK_EDITABLE(widget));
++		if (value && *value)
++			g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_KEY, g_strdup(value));
++	}
++
+ 	return hash;
+ }
+ 
+diff --git a/shared/nm-service-defines.h b/shared/nm-service-defines.h
+index 44a83f6..9252011 100644
+--- a/shared/nm-service-defines.h
++++ b/shared/nm-service-defines.h
+@@ -94,6 +94,10 @@
+ #define NM_OPENVPN_KEY_CERTPASS_FLAGS            "cert-pass-flags"
+ #define NM_OPENVPN_KEY_HTTP_PROXY_PASSWORD_FLAGS "http-proxy-password-flags"
+ 
++#define NM_OPENVPN_KEY_SCRAMBLE_ENABLE           "scramble-enable"
++#define NM_OPENVPN_KEY_SCRAMBLE_TYPE             "scramble-type"
++#define NM_OPENVPN_KEY_SCRAMBLE_KEY              "scramble-key"
++
+ 
+ /* Internal auth-dialog -> service token indicating that no secrets are
+  * required for the connection.
+diff --git a/src/nm-openvpn-service.c b/src/nm-openvpn-service.c
+index af57227..eef013f 100644
+--- a/src/nm-openvpn-service.c
++++ b/src/nm-openvpn-service.c
+@@ -1917,6 +1917,18 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+ 	if (nm_streq0 (tmp, "yes"))
+ 		args_add_strv (args, "--push-peer-info");
+ 
++	/* Add scramble support if enabled */
++	tmp = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
++	if (nm_streq0 (tmp, "yes")) {
++		const char *scramble_type = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
++		const char *scramble_key = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY);
++		if (scramble_type) {
++			args_add_strv (args, "--scramble", scramble_type);
++			if (scramble_key)
++				args_add_strv (args, scramble_key);
++		}
++	}
++
+ 	/* Now append configuration options which are dependent on the configuration type */
+ 	if (nm_streq (connection_type, NM_OPENVPN_CONTYPE_TLS)) {
+ 		args_add_strv (args, "--client");

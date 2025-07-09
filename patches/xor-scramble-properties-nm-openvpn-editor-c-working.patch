@@ -1,17 +1,16 @@
 diff --git a/properties/nm-openvpn-editor.c b/properties/nm-openvpn-editor.c
-index 4c3b7a0..5d4e74d 100644
+index 4c3b7a0..53b11af 100644
 --- a/properties/nm-openvpn-editor.c
 +++ b/properties/nm-openvpn-editor.c
-@@ -1564,6 +1564,8 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+@@ -1564,6 +1564,7 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
  	NMSettingSecretFlags pw_flags;
  	GError *error = NULL;
  	NMOvpnComp comp;
 +	gboolean scramble_enabled;
-+	FILE *log_file;
  
  	g_return_val_if_fail (hash != NULL, NULL);
  
-@@ -1970,6 +1972,33 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+@@ -1970,6 +1971,25 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
  	                  "clicked", G_CALLBACK (gtk_widget_show),
  	                  gtk_builder_get_object (builder, "sk_key_chooser"));
  
@@ -19,14 +18,6 @@ index 4c3b7a0..5d4e74d 100644
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
 +	scramble_enabled = _hash_get_boolean(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
 +	gtk_check_button_set_active(GTK_CHECK_BUTTON(widget), scramble_enabled);
-+	
-+	/* Debug logging for scramble UI load */
-+	log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
-+	if (log_file) {
-+		fprintf(log_file, "[%ld] UI_LOAD: scramble_enabled=%s\n", 
-+			(long)time(NULL), scramble_enabled ? "true" : "false");
-+		fclose(log_file);
-+	}
 +
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
 +	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
@@ -45,7 +36,7 @@ index 4c3b7a0..5d4e74d 100644
  	return dialog;
  }
  
-@@ -2417,6 +2446,32 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
+@@ -2417,6 +2437,22 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
  	if (gtk_check_button_get_active (GTK_CHECK_BUTTON (widget)))
  		g_hash_table_insert (hash, NM_OPENVPN_KEY_PUSH_PEER_INFO, g_strdup ("yes"));
  
@@ -53,8 +44,6 @@ index 4c3b7a0..5d4e74d 100644
 +	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(widget))) {
 +		int scramble_type_idx;
 +		const char *scramble_type = "obfuscate"; // default
-+		FILE *log_file;
-+		
 +		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, g_strdup("yes"));
 +		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
 +		scramble_type_idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
@@ -65,14 +54,6 @@ index 4c3b7a0..5d4e74d 100644
 +		value = gtk_editable_get_text(GTK_EDITABLE(widget));
 +		if (value && *value)
 +			g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_KEY, g_strdup(value));
-+		
-+		/* Debug logging for scramble UI save */
-+		log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
-+		if (log_file) {
-+			fprintf(log_file, "[%ld] UI_SAVE: scramble_enabled=true, type=%s, key=%s\n", 
-+				(long)time(NULL), scramble_type, value ? value : "none");
-+			fclose(log_file);
-+		}
 +	}
 +
  	return hash;

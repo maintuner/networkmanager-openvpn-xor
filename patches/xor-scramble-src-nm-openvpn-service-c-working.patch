@@ -1,8 +1,8 @@
 diff --git a/src/nm-openvpn-service.c b/src/nm-openvpn-service.c
-index af57227..ae7b746 100644
+index af57227..eef013f 100644
 --- a/src/nm-openvpn-service.c
 +++ b/src/nm-openvpn-service.c
-@@ -1917,6 +1917,32 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1917,6 +1917,18 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  	if (nm_streq0 (tmp, "yes"))
  		args_add_strv (args, "--push-peer-info");
  
@@ -11,24 +11,10 @@ index af57227..ae7b746 100644
 +	if (nm_streq0 (tmp, "yes")) {
 +		const char *scramble_type = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
 +		const char *scramble_key = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY);
-+		FILE *log_file;
-+		
 +		if (scramble_type) {
 +			args_add_strv (args, "--scramble", scramble_type);
 +			if (scramble_key)
 +				args_add_strv (args, scramble_key);
-+		}
-+		
-+		/* Debug logging for scramble service processing */
-+		log_file = fopen("/tmp/nm-openvpn-scramble-debug.log", "a");
-+		if (log_file) {
-+			fprintf(log_file, "[%ld] SERVICE: Processing scramble properties, type=%s, key=%s\n", 
-+				(long)time(NULL), scramble_type ? scramble_type : "none", 
-+				scramble_key ? scramble_key : "none");
-+			fprintf(log_file, "[%ld] SERVICE: Added --scramble %s %s to command line\n", 
-+				(long)time(NULL), scramble_type ? scramble_type : "none", 
-+				scramble_key ? scramble_key : "none");
-+			fclose(log_file);
 +		}
 +	}
 +
