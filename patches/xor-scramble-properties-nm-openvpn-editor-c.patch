@@ -1,5 +1,5 @@
 diff --git a/properties/nm-openvpn-editor.c b/properties/nm-openvpn-editor.c
-index 4c3b7a0..fdcf5ef 100644
+index 4c3b7a0..857c5e3 100644
 --- a/properties/nm-openvpn-editor.c
 +++ b/properties/nm-openvpn-editor.c
 @@ -1064,7 +1064,7 @@ populate_tls_remote_mode_entry_combo (GtkEditable* entry, GtkComboBox *box,
@@ -11,15 +11,10 @@ index 4c3b7a0..fdcf5ef 100644
  	                    TLS_REMOTE_MODE_COL_VALUE, TLS_REMOTE_MODE_NONE,
  	                    -1);
  
-@@ -1970,6 +1970,25 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+@@ -1970,6 +1970,20 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
  	                  "clicked", G_CALLBACK (gtk_widget_show),
  	                  gtk_builder_get_object (builder, "sk_key_chooser"));
  
-+	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
-+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
-+	gboolean scramble_enabled = _hash_get_boolean(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
-+	gtk_check_button_set_active(GTK_CHECK_BUTTON(widget), scramble_enabled);
-+
 +	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
 +	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
 +	if (value && *value)
@@ -37,24 +32,23 @@ index 4c3b7a0..fdcf5ef 100644
  	return dialog;
  }
  
-@@ -2417,6 +2436,21 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
+@@ -2417,6 +2431,20 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
  	if (gtk_check_button_get_active (GTK_CHECK_BUTTON (widget)))
  		g_hash_table_insert (hash, NM_OPENVPN_KEY_PUSH_PEER_INFO, g_strdup ("yes"));
  
-+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
-+	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(widget))) {
-+		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, g_strdup("yes"));
-+		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
-+		int scramble_type_idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-+		const char *scramble_type = "obfuscate"; // default
-+		if (scramble_type_idx == 0) scramble_type = "obfuscate";
-+		// Add more types here as needed
-+		g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE, g_strdup(scramble_type));
-+		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
-+		value = gtk_editable_get_text(GTK_EDITABLE(widget));
-+		if (value && *value)
-+			g_hash_table_insert(hash, NM_OPENVPN_KEY_SCRAMBLE_KEY, g_strdup(value));
-+	}
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
++	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
++	if (value && *value)
++		gtk_combo_box_set_active_id(GTK_COMBO_BOX(widget), value);
++	else
++		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
++
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
++	value = g_hash_table_lookup (hash, NM_OPENVPN_KEY_SCRAMBLE_KEY);
++	if (value && *value)
++		gtk_editable_set_text(GTK_EDITABLE(widget), value);
++	else
++		gtk_editable_set_text(GTK_EDITABLE(widget), "");
 +
  	return hash;
  }
