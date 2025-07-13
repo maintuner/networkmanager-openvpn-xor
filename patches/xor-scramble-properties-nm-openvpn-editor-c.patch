@@ -1,5 +1,5 @@
 diff --git a/properties/nm-openvpn-editor.c b/properties/nm-openvpn-editor.c
-index 4c3b7a0..857c5e3 100644
+index 4c3b7a0..c9abdc0 100644
 --- a/properties/nm-openvpn-editor.c
 +++ b/properties/nm-openvpn-editor.c
 @@ -1064,7 +1064,7 @@ populate_tls_remote_mode_entry_combo (GtkEditable* entry, GtkComboBox *box,
@@ -11,7 +11,14 @@ index 4c3b7a0..857c5e3 100644
  	                    TLS_REMOTE_MODE_COL_VALUE, TLS_REMOTE_MODE_NONE,
  	                    -1);
  
-@@ -1970,6 +1970,20 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+@@ -1966,10 +1966,27 @@ advanced_dialog_new (GHashTable *hash, const char *contype)
+ 	_builder_init_toggle_button (builder, "push_peer_info_checkbutton",
+ 	                             _hash_get_boolean (hash, NM_OPENVPN_KEY_PUSH_PEER_INFO));
+ 
++	_builder_init_toggle_button (builder, "scramble_checkbutton",
++	                             _hash_get_boolean (hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE));
++
+ 	g_signal_connect_swapped (G_OBJECT (gtk_builder_get_object (builder, "sk_key_chooser_button")),
  	                  "clicked", G_CALLBACK (gtk_widget_show),
  	                  gtk_builder_get_object (builder, "sk_key_chooser"));
  
@@ -32,7 +39,30 @@ index 4c3b7a0..857c5e3 100644
  	return dialog;
  }
  
-@@ -2417,6 +2431,20 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
+@@ -2195,6 +2212,22 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
+ 	if (value && *value)
+ 		g_hash_table_insert (hash, NM_OPENVPN_KEY_TLS_VERSION_MAX, g_strdup (value));
+ 
++	/* Handle scramble options */
++	widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_checkbutton"));
++	if (gtk_check_button_get_active (GTK_CHECK_BUTTON (widget))) {
++		g_hash_table_insert (hash, NM_OPENVPN_KEY_SCRAMBLE_ENABLE, g_strdup ("yes"));
++		
++		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_type_combo"));
++		value = gtk_combo_box_get_active_id (GTK_COMBO_BOX (widget));
++		if (value && *value)
++			g_hash_table_insert (hash, NM_OPENVPN_KEY_SCRAMBLE_TYPE, g_strdup (value));
++		
++		widget = GTK_WIDGET (gtk_builder_get_object (builder, "scramble_key_entry"));
++		value = gtk_editable_get_text (GTK_EDITABLE (widget));
++		if (value && *value)
++			g_hash_table_insert (hash, NM_OPENVPN_KEY_SCRAMBLE_KEY, g_strdup (value));
++	}
++
+ 	contype = g_object_get_data (G_OBJECT (dialog), "connection-type");
+ 	if (   !strcmp (contype, NM_OPENVPN_CONTYPE_TLS)
+ 	    || !strcmp (contype, NM_OPENVPN_CONTYPE_PASSWORD_TLS)
+@@ -2417,6 +2450,20 @@ advanced_dialog_new_hash_from_dialog (GtkWidget *dialog)
  	if (gtk_check_button_get_active (GTK_CHECK_BUTTON (widget)))
  		g_hash_table_insert (hash, NM_OPENVPN_KEY_PUSH_PEER_INFO, g_strdup ("yes"));
  
