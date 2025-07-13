@@ -1,5 +1,5 @@
 diff --git a/src/nm-openvpn-service.c b/src/nm-openvpn-service.c
-index af57227..5f79127 100644
+index af57227..f299242 100644
 --- a/src/nm-openvpn-service.c
 +++ b/src/nm-openvpn-service.c
 @@ -426,7 +426,7 @@ validate_one_property (const char *key, const char *value, gpointer user_data)
@@ -109,7 +109,7 @@ index af57227..5f79127 100644
  			             tmp);
  			return FALSE;
  		}
-@@ -1648,12 +1648,22 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1648,12 +1648,32 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -128,12 +128,22 @@ index af57227..5f79127 100644
 +		if (nmovpn_arg_is_set(scramble_type) && nmovpn_arg_is_set(scramble_key)) {
 +			args_add_strv(args, "--scramble", scramble_type, scramble_key);
 +		}
++	} else {
++		/* Environment variable backup for scramble */
++		const char *scramble_env = getenv("NM_OPENVPN_SCRAMBLE");
++		if (scramble_env && nm_streq0(scramble_env, "yes")) {
++			const char *scramble_type_env = getenv("NM_OPENVPN_SCRAMBLE_TYPE");
++			const char *scramble_key_env = getenv("NM_OPENVPN_SCRAMBLE_KEY");
++			if (scramble_type_env && scramble_key_env) {
++				args_add_strv(args, "--scramble", scramble_type_env, scramble_key_env);
++			}
++		}
 +	}
 +
  	/* Device and device type, defaults to tun */
  	tmp = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_DEV);
  	tmp2 = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_DEV_TYPE);
-@@ -1692,7 +1702,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1692,7 +1712,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -142,7 +152,7 @@ index af57227..5f79127 100644
  			             tmp);
  			return FALSE;
  		}
-@@ -1797,7 +1807,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1797,7 +1817,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -151,7 +161,7 @@ index af57227..5f79127 100644
  			             tmp);
  			return FALSE;
  		}
-@@ -1827,7 +1837,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1827,7 +1847,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -160,7 +170,7 @@ index af57227..5f79127 100644
  			             tmp);
  			return FALSE;
  		}
-@@ -1840,7 +1850,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1840,7 +1860,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -169,7 +179,7 @@ index af57227..5f79127 100644
  			             tmp);
  			return FALSE;
  		}
-@@ -1950,7 +1960,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1950,7 +1970,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  		g_set_error (error,
  		             NM_VPN_PLUGIN_ERROR,
  		             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -178,7 +188,7 @@ index af57227..5f79127 100644
  		             connection_type);
  		return FALSE;
  	}
-@@ -1968,7 +1978,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1968,7 +1988,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -187,7 +197,7 @@ index af57227..5f79127 100644
  			             nm_openvpn_user);
  			return FALSE;
  		}
-@@ -1980,7 +1990,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+@@ -1980,7 +2000,7 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
  			g_set_error (error,
  			             NM_VPN_PLUGIN_ERROR,
  			             NM_VPN_PLUGIN_ERROR_BAD_ARGUMENTS,
@@ -196,7 +206,7 @@ index af57227..5f79127 100644
  			             nm_openvpn_group);
  			return FALSE;
  		}
-@@ -2337,7 +2347,7 @@ main (int argc, char *argv[])
+@@ -2337,7 +2357,7 @@ main (int argc, char *argv[])
  	gulong handler_id_plugin = 0;
  
  	GOptionEntry options[] = {
