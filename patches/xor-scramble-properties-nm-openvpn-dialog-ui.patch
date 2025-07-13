@@ -1,5 +1,5 @@
 diff --git a/properties/nm-openvpn-dialog.ui b/properties/nm-openvpn-dialog.ui
-index 874fba5..5fc2fb2 100644
+index 874fba5..609bcfb 100644
 --- a/properties/nm-openvpn-dialog.ui
 +++ b/properties/nm-openvpn-dialog.ui
 @@ -648,7 +648,7 @@ config: ifconfig &lt;l&gt; &lt;rn&gt;</property>
@@ -20,7 +20,7 @@ index 874fba5..5fc2fb2 100644
  config: dev &lt;name&gt;</property>
                          <property name="width_chars">15</property>
                        </object>
-@@ -1550,6 +1550,62 @@ config: max-routes &lt;n&gt;</property>
+@@ -1550,6 +1550,63 @@ config: max-routes &lt;n&gt;</property>
                      <property name="position">15</property>
                    </packing>
                  </child>
@@ -50,6 +50,7 @@ index 874fba5..5fc2fb2 100644
 +                        <property name="visible">True</property>
 +                        <property name="can_focus">True</property>
 +                        <property name="tooltip_text" translatable="yes">Type of scramble/obfuscation to use.</property>
++                        <property name="active">0</property>
 +                        <items>
 +                          <item translatable="yes">obfuscate</item>
 +                        </items>
@@ -77,13 +78,13 @@ index 874fba5..5fc2fb2 100644
 +                  <packing>
 +                    <property name="expand">False</property>
 +                    <property name="fill">True</property>
-+                    <property name="position">16</property>
++                    <property name="position">4</property>
 +                  </packing>
 +                </child>
                </object>
              </child>
              <child type="tab">
-@@ -2132,7 +2188,7 @@ config: tls-auth &lt;file&gt; [direction] | tls-crypt &lt;file&gt;</property>
+@@ -2132,7 +2189,7 @@ config: tls-auth &lt;file&gt; [direction] | tls-crypt &lt;file&gt;</property>
                              <property name="visible">True</property>
                              <property name="can_focus">False</property>
                              <property name="tooltip_text" translatable="yes">Direction parameter for static key mode.
