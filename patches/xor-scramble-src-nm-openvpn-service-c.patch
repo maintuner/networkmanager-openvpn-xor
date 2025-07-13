@@ -1,5 +1,5 @@
 diff --git a/src/nm-openvpn-service.c b/src/nm-openvpn-service.c
-index af57227..091ebbd 100644
+index af57227..222bb59 100644
 --- a/src/nm-openvpn-service.c
 +++ b/src/nm-openvpn-service.c
 @@ -198,6 +198,9 @@ static const ValidProperty valid_properties[] = {
@@ -12,3 +12,21 @@ index af57227..091ebbd 100644
  	{ NULL,                                     G_TYPE_NONE, FALSE }
  };
  
+@@ -1735,6 +1738,17 @@ nm_openvpn_start_openvpn_binary (NMOpenvpnPlugin *plugin,
+ 		args_add_strv (args, tmp);
+ 	}
+ 
++	/* Handle scramble (XOR obfuscation) options */
++	tmp = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_ENABLE);
++	if (nmovpn_arg_is_set (tmp) && nm_streq (tmp, "yes")) {
++		const char *scramble_type = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_TYPE);
++		const char *scramble_key = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_SCRAMBLE_KEY);
++		
++		if (nmovpn_arg_is_set (scramble_type) && nmovpn_arg_is_set (scramble_key)) {
++			args_add_strv (args, "--scramble", scramble_type, scramble_key);
++		}
++	}
++
+ 	tmp = nm_setting_vpn_get_data_item (s_vpn, NM_OPENVPN_KEY_EXTRA_CERTS);
+ 	if (nmovpn_arg_is_set (tmp)) {
+ 		args_add_strv (args, "--extra-certs");
