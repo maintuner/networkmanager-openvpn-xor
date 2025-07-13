@@ -1,0 +1,14 @@
+diff --git a/src/nm-openvpn-service.c b/src/nm-openvpn-service.c
+index af57227..091ebbd 100644
+--- a/src/nm-openvpn-service.c
++++ b/src/nm-openvpn-service.c
+@@ -198,6 +198,9 @@ static const ValidProperty valid_properties[] = {
+ 	{ NM_OPENVPN_KEY_HTTP_PROXY_PASSWORD_FLAGS, G_TYPE_STRING, 0, 0, FALSE },
+ 	{ NM_OPENVPN_KEY_TLS_VERSION_MIN,           G_TYPE_STRING, 0, 0, FALSE },
+ 	{ NM_OPENVPN_KEY_TLS_VERSION_MAX,           G_TYPE_STRING, 0, 0, FALSE },
++	{ NM_OPENVPN_KEY_SCRAMBLE_ENABLE,           G_TYPE_BOOLEAN, 0, 0, FALSE },
++	{ NM_OPENVPN_KEY_SCRAMBLE_TYPE,             G_TYPE_STRING, 0, 0, FALSE },
++	{ NM_OPENVPN_KEY_SCRAMBLE_KEY,              G_TYPE_STRING, 0, 0, FALSE },
+ 	{ NULL,                                     G_TYPE_NONE, FALSE }
+ };
+ 
